@@ -26,7 +26,7 @@
 
 ![Clearline Preview](public/demo.png)
 
-Live: [https://glass-balcony.vercel.app/](https://glass-balcony.vercel.app/)
+Live: [https://clearline-balcony.vercel.app/](https://clearline-balcony.vercel.app/)
 
 ## Features
 
@@ -56,8 +56,8 @@ Live: [https://glass-balcony.vercel.app/](https://glass-balcony.vercel.app/)
 ### Installation
 
 ```bash
-git clone https://github.com/hasanharman/glass-balcony.git
-cd glass-balcony
+git clone https://github.com/hasanharman/clearline.git
+cd clearline
 pnpm install
 pnpm dev
 ```
@@ -87,7 +87,7 @@ export const site = {
   address: "Workshop · Industrial Zone, Your City",
   hours: "Mon–Sat · 08:30–18:30",
   year: 2026,
-  repo: "https://github.com/hasanharman/glass-balcony",
+  repo: "https://github.com/hasanharman/clearline",
 }
 ```
 
@@ -113,14 +113,14 @@ The same file holds the nav links, process steps, reasons and FAQ copy. Colours 
 
 ## Contributing
 
-Issues and pull requests are welcome: [hasanharman/glass-balcony](https://github.com/hasanharman/glass-balcony)
+Issues and pull requests are welcome: [hasanharman/clearline](https://github.com/hasanharman/clearline)
 
 ## Star History
 
-<a href="https://www.star-history.com/?repos=hasanharman%2Fglass-balcony&type=timeline&legend=top-left">
+<a href="https://www.star-history.com/?repos=hasanharman%2Fclearline&type=timeline&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=hasanharman/glass-balcony&type=timeline&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=hasanharman/glass-balcony&type=timeline&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=hasanharman/glass-balcony&type=timeline&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=hasanharman/clearline&type=timeline&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=hasanharman/clearline&type=timeline&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=hasanharman/clearline&type=timeline&legend=top-left" />
  </picture>
 </a>
