@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-4 -20 24 34" width="240" height="340">
+  <polygon points="19.05,11.00 16.45,12.50 16.45,10.50 19.05,9.00" fill="color-mix(in oklab, oklch(0.992 0.003 85) 53%, oklch(0.36 0.015 255))" stroke="oklch(0.21 0.012 255)" stroke-width="0.35" stroke-linejoin="round"/>
+  <polygon points="-2.60,1.50 16.45,12.50 16.45,10.50 -2.60,-0.50" fill="color-mix(in oklab, oklch(0.992 0.003 85) 83%, oklch(0.36 0.015 255))" stroke="oklch(0.21 0.012 255)" stroke-width="0.35" stroke-linejoin="round"/>
+  <polygon points="0.00,-2.00 19.05,9.00 16.45,10.50 -2.60,-0.50" fill="color-mix(in oklab, oklch(0.992 0.003 85) 93%, oklch(0.36 0.015 255))" stroke="oklch(0.21 0.012 255)" stroke-width="0.35" stroke-linejoin="round"/>
+  <polygon points="8.49,3.90 7.62,4.40 7.62,-9.60 8.49,-10.10" fill="oklch(0.66 0.2 40)" fill-opacity="0.35" stroke="oklch(0.21 0.012 255)" stroke-width="0.35" stroke-linejoin="round"/>
+  <polygon points="-0.87,-0.50 7.62,4.40 7.62,-9.60 -0.87,-14.50" fill="oklch(0.66 0.2 40)" fill-opacity="0.35" stroke="oklch(0.21 0.012 255)" stroke-width="0.35" stroke-linejoin="round"/>
+  <polygon points="0.00,-15.00 8.49,-10.10 7.62,-9.60 -0.87,-14.50" fill="oklch(0.66 0.2 40)" fill-opacity="0.35" stroke="oklch(0.21 0.012 255)" stroke-width="0.35" stroke-linejoin="round"/>
+  <polygon points="17.32,9.00 16.45,9.50 16.45,-4.50 17.32,-5.00" fill="oklch(0.66 0.2 40)" fill-opacity="0.35" stroke="oklch(0.21 0.012 255)" stroke-width="0.35" stroke-linejoin="round"/>
+  <polygon points="7.97,4.60 16.45,9.50 16.45,-4.50 7.97,-9.40" fill="oklch(0.66 0.2 40)" fill-opacity="0.35" stroke="oklch(0.21 0.012 255)" stroke-width="0.35" stroke-linejoin="round"/>
+  <polygon points="8.83,-9.90 17.32,-5.00 16.45,-4.50 7.97,-9.40" fill="oklch(0.66 0.2 40)" fill-opacity="0.35" stroke="oklch(0.21 0.012 255)" stroke-width="0.35" stroke-linejoin="round"/>
+  <polygon points="19.05,-5.00 16.45,-3.50 16.45,-5.50 19.05,-7.00" fill="color-mix(in oklab, oklch(0.992 0.003 85) 53%, oklch(0.36 0.015 255))" stroke="oklch(0.21 0.012 255)" stroke-width="0.35" stroke-linejoin="round"/>
+  <polygon points="-2.60,-14.50 16.45,-3.50 16.45,-5.50 -2.60,-16.50" fill="color-mix(in oklab, oklch(0.992 0.003 85) 83%, oklch(0.36 0.015 255))" stroke="oklch(0.21 0.012 255)" stroke-width="0.35" stroke-linejoin="round"/>
+  <polygon points="0.00,-18.00 19.05,-7.00 16.45,-5.50 -2.60,-16.50" fill="color-mix(in oklab, oklch(0.992 0.003 85) 93%, oklch(0.36 0.015 255))" stroke="oklch(0.21 0.012 255)" stroke-width="0.35" stroke-linejoin="round"/>
+</svg>
