@@ -4,9 +4,9 @@ import { motion, useReducedMotion, type Transition } from "motion/react"
 import { useId, type ReactNode } from "react"
 
 import { fitBoxes, HatchDef, IsoBox, IsoLine } from "@/components/iso/iso-box"
-import { isoText, points, project, type V3 } from "@/lib/iso"
+import { isoText, points, project, projectPoints, tint, type V3 } from "@/lib/iso"
 import { process } from "@/lib/site"
-import { SectionHeader } from "./section-header"
+import { Section, SectionHeader } from "./section"
 
 const loop: Transition = { duration: 2.4, repeat: Infinity, repeatType: "mirror", repeatDelay: 0.9, ease: [0.65, 0, 0.35, 1] }
 
@@ -96,8 +96,8 @@ function EdgeScene() {
       <Mover to={[6, 0, 0]}>
         <IsoBox a={[6, 14, 10]} b={[54, 15.2, 56]} mat="glass" />
       </Mover>
-      <polygon points={wheel.side} fill="color-mix(in oklab, var(--rubber) 80%, var(--shade))" stroke="var(--ink)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
-      <polygon points={wheel.top} fill="color-mix(in oklab, var(--steel) 90%, var(--shade))" stroke="var(--ink)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+      <polygon points={wheel.side} fill={tint("var(--rubber)", 0.8)} stroke="var(--ink)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+      <polygon points={wheel.top} fill={tint("var(--steel)", 0.9)} stroke="var(--ink)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
       <IsoLine pts={[[68, 14.6, 32], [68, 14.6, 40]]} />
       <IsoBox a={[62, 8.6, 40]} b={[74, 20.6, 52]} mat="dark" />
       <IsoBox a={[70, 4, 52]} b={[96, 10, 57]} mat="steel" />
@@ -131,7 +131,7 @@ function TemperScene() {
       </Mover>
       <IsoBox a={[0, 49, 0]} b={[44, 52, 10]} />
       <IsoBox a={[44, -2, 0]} b={[104, 56, 42]} mat="dark" />
-      <polygon points={points(glow.map(project))} fill="var(--signal)" fillOpacity={0.9} stroke="var(--ink)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+      <polygon points={projectPoints(glow)} fill="var(--signal)" fillOpacity={0.9} stroke="var(--ink)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
       <text
         transform={isoText("xz", project([74, 56, 30]))}
         fontSize={6}
@@ -200,40 +200,35 @@ const scenes = [CutScene, EdgeScene, TemperScene, FitScene]
 
 export function Process() {
   return (
-    <section id="process" className="border-t">
-      <div className="mx-auto max-w-[1440px] px-4 py-24 sm:px-6 lg:px-10 lg:py-32">
-        <SectionHeader
-          index="02"
-          eyebrow="Process"
-          title={
-            <>
-              From raw sheet to your balcony, <em className="font-serif font-normal tracking-[-0.02em]">made locally.</em>
-            </>
-          }
-          lede="Most installers order finished panels and wait. We buy the glass as raw sheet and do every step ourselves, in a workshop you can drive to."
-        />
-        <ol className="mt-14 grid gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-2 xl:grid-cols-4">
-          {process.map((step, i) => {
-            const Art = scenes[i]
-            return (
-              <li key={step.no} className="flex flex-col bg-background p-5 sm:p-6">
-                <div className="bg-drafting relative aspect-[5/4] rounded-md border">
-                  <div className="absolute inset-0 p-8">
-                    <Art />
-                  </div>
-                  <span className="text-label absolute top-2.5 left-3 text-muted-foreground">Fig. {step.no}</span>
+    <Section id="process">
+      <SectionHeader
+        index="02"
+        eyebrow="Process"
+        title="From raw sheet to your balcony,"
+        accent="made locally."
+        lede="Most installers order finished panels and wait. We buy the glass as raw sheet and do every step ourselves, in a workshop you can drive to."
+      />
+      <ol className="mt-14 grid gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-2 xl:grid-cols-4">
+        {process.map((step, i) => {
+          const Art = scenes[i]
+          return (
+            <li key={step.no} className="flex flex-col bg-background p-5 sm:p-6">
+              <div className="bg-drafting relative aspect-[5/4] rounded-md border">
+                <div className="absolute inset-0 p-8">
+                  <Art />
                 </div>
-                <div className="mt-6 flex items-baseline justify-between">
-                  <span className="text-label text-signal">{step.no}</span>
-                  <span className="text-label text-muted-foreground">{step.note}</span>
-                </div>
-                <h3 className="mt-2 text-2xl font-medium tracking-tight">{step.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-pretty text-muted-foreground">{step.body}</p>
-              </li>
-            )
-          })}
-        </ol>
-      </div>
-    </section>
+                <span className="text-label absolute top-2.5 left-3 text-muted-foreground">Fig. {step.no}</span>
+              </div>
+              <div className="mt-6 flex items-baseline justify-between">
+                <span className="text-label text-signal">{step.no}</span>
+                <span className="text-label text-muted-foreground">{step.note}</span>
+              </div>
+              <h3 className="mt-2 text-2xl font-medium tracking-tight">{step.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-pretty text-muted-foreground">{step.body}</p>
+            </li>
+          )
+        })}
+      </ol>
+    </Section>
   )
 }

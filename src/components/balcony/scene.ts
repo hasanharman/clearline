@@ -20,10 +20,11 @@ import {
 
 /** Panel width, glass thickness and glass height in drawing units. */
 export const W = 60
-export const T = 1.2
-export const H = 120
+const T = 1.2
+const H = 120
 /** One drawing unit in millimetres (60 units → 720 mm panel). */
-export const MM = 12
+const MM = 12
+export const PANEL_MM = W * MM
 
 export type PartKind =
   | "topTrack"
@@ -37,7 +38,7 @@ export type PartKind =
   | "jamb"
   | "parapet"
 
-export type PartMeta = {
+type PartMeta = {
   no: string
   name: string
   spec: string
@@ -154,7 +155,7 @@ export function stageOf(kind: PartKind) {
   return STAGGER_START + STAGE_DELAY + (PART_ORDER.indexOf(kind) + 0.5) * STAGGER_STEP
 }
 
-export type Material =
+type Material =
   | "frame"
   | "glass"
   | "glassEdge"
@@ -177,9 +178,9 @@ export type Shape = {
   hatch?: boolean
 }
 
-export type Anchor = { kind: PartKind; at: V2 }
+type Anchor = { kind: PartKind; at: V2 }
 
-export type Dim = {
+type Dim = {
   ext: V2[][]
   line: V2[]
   ticks: V2[][]
@@ -195,7 +196,7 @@ export type Scene = {
   bounds: Bounds
 }
 
-export type SceneInput = {
+type SceneInput = {
   panels: number
   explode: number
   open: number
@@ -205,7 +206,7 @@ export type SceneInput = {
 }
 
 const scale = (v: V3, k: number): V3 => [v[0] * k, v[1] * k, v[2] * k]
-const formatMm = (n: number) => `${Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} mm`
+export const formatMm = (n: number) => `${Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} mm`
 
 /** Fold sequence: each panel slides to the stack, then swings 90° inward. */
 function panelPlacement(i: number, n: number, open: number): Placement {
@@ -368,16 +369,15 @@ export function buildScene(input: SceneInput): Scene {
     })
     const x = L + 2
     const yh = T + 17
-    const Q = (p: V3) => project(p)
     dims.push({
       ext: [
-        [Q([x, T + 5, -16]), Q([x, yh + 2.5, -16])],
-        [Q([x, T + 5, H + 16]), Q([x, yh + 2.5, H + 16])],
+        [project([x, T + 5, -16]), project([x, yh + 2.5, -16])],
+        [project([x, T + 5, H + 16]), project([x, yh + 2.5, H + 16])],
       ],
-      line: [Q([x, yh, -16]), Q([x, yh, H + 16])],
-      ticks: [-16, H + 16].map((zz) => [Q([x, yh - 1.8, zz - 1.8]), Q([x, yh + 1.8, zz + 1.8])]),
+      line: [project([x, yh, -16]), project([x, yh, H + 16])],
+      ticks: [-16, H + 16].map((zz) => [project([x, yh - 1.8, zz - 1.8]), project([x, yh + 1.8, zz + 1.8])]),
       text: formatMm((H + 32) * MM),
-      at: Q([x, yh + 2.4, H / 2]),
+      at: project([x, yh + 2.4, H / 2]),
       plane: "side",
     })
   }

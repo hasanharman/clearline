@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from "motion/react"
 import { useState } from "react"
 
 import { fitBoxes, IsoBox } from "@/components/iso/iso-box"
-import { points, project, type V3 } from "@/lib/iso"
+import { project, projectPoints, type V3 } from "@/lib/iso"
 
 const BAYS = 5
 const FLOORS = 5
@@ -14,7 +14,6 @@ const DEPTH = 56
 const WIDTH = BAYS * BAY
 const HEIGHT = FLOORS * STOREY + 6
 
-const quad = (ps: V3[]) => points(ps.map(project))
 // Deterministic "lights on" pattern for the side windows.
 const lit = (i: number) => (i * 7 + 3) % 5 === 0
 
@@ -28,7 +27,7 @@ function FacadeOpenings() {
       out.push(
         <polygon
           key={`${f}-${b}`}
-          points={quad([[x0, DEPTH, z0], [x1, DEPTH, z0], [x1, DEPTH, z0 + 24], [x0, DEPTH, z0 + 24]])}
+          points={projectPoints([[x0, DEPTH, z0], [x1, DEPTH, z0], [x1, DEPTH, z0 + 24], [x0, DEPTH, z0 + 24]])}
           fill="var(--shade)"
           fillOpacity={0.22}
           stroke="var(--ink)"
@@ -44,7 +43,7 @@ function FacadeOpenings() {
       out.push(
         <polygon
           key={`s-${f}-${w}`}
-          points={quad([[WIDTH, y0, z0], [WIDTH, y0 + 8, z0], [WIDTH, y0 + 8, z0 + 16], [WIDTH, y0, z0 + 16]])}
+          points={projectPoints([[WIDTH, y0, z0], [WIDTH, y0 + 8, z0], [WIDTH, y0 + 8, z0 + 16], [WIDTH, y0, z0 + 16]])}
           fill={lit(f * 4 + w) ? "var(--signal)" : "var(--shade)"}
           fillOpacity={lit(f * 4 + w) ? 0.55 : 0.22}
           stroke="var(--ink)"
@@ -67,7 +66,7 @@ function Balcony({ f, b, hot, onHover }: { f: number; b: number; hot: boolean; o
   const pane = (ps: V3[], k: string) => (
     <polygon
       key={k}
-      points={quad(ps)}
+      points={projectPoints(ps)}
       fill={glass}
       fillOpacity={hot ? 0.45 : 0.3}
       stroke="var(--ink)"

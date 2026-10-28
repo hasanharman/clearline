@@ -1,5 +1,4 @@
-// Isometric projection helpers. World axes: +x runs down-right, +y runs
-// down-left, +z runs up. The viewer looks from (+1, +1, +1).
+// Isometric helpers: +x down-right, +y down-left, +z up, viewed from (+1, +1, +1).
 
 export type V3 = readonly [number, number, number]
 export type V2 = readonly [number, number]
@@ -17,11 +16,11 @@ export function points(ps: readonly V2[]) {
   return out.trimEnd()
 }
 
+export const projectPoints = (ps: readonly V3[]) => points(ps.map(project))
+
 export const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 export const lerp = (a: number, b: number, t: number) => a + (b - a) * t
-export const easeInOut = (t: number) =>
-  t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
-export const easeOut = (t: number) => 1 - Math.pow(1 - t, 3)
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
 /** Eased progress of `t` through the window [a, b]. */
 export const range = (t: number, a: number, b: number) =>
   easeInOut(clamp01((t - a) / (b - a)))
@@ -61,7 +60,10 @@ export function light(n: V3) {
   return clamp01(0.64 + 0.36 * d)
 }
 
-export type BoxFace = { pts: V2[]; normal: V3; side: "top" | "x" | "y" | "-x" | "-y" }
+/** `color` darkened toward --shade by brightness `l`. */
+export const tint = (color: string, l: number) => `color-mix(in oklab, ${color} ${Math.round(l * 100)}%, var(--shade))`
+
+type BoxFace = { pts: V2[]; normal: V3; side: "top" | "x" | "y" | "-x" | "-y" }
 
 /** Visible faces of an axis-aligned box (in local space) after placement. */
 export function boxFaces(a: V3, b: V3, pl: Placement, offset?: V3): BoxFace[] {
@@ -87,7 +89,7 @@ export function boxFaces(a: V3, b: V3, pl: Placement, offset?: V3): BoxFace[] {
 export function circle(
   c: V3,
   r: number,
-  plane: "xy" | "xz" | "yz",
+  plane: "xy" | "xz",
   pl: Placement = IDENTITY,
   offset?: V3,
   segments = 24
@@ -97,12 +99,7 @@ export function circle(
     const a = (i / segments) * Math.PI * 2
     const u = Math.cos(a) * r
     const v = Math.sin(a) * r
-    const p: V3 =
-      plane === "xy"
-        ? [c[0] + u, c[1] + v, c[2]]
-        : plane === "xz"
-          ? [c[0] + u, c[1], c[2] + v]
-          : [c[0], c[1] + u, c[2] + v]
+    const p: V3 = plane === "xy" ? [c[0] + u, c[1] + v, c[2]] : [c[0] + u, c[1], c[2] + v]
     out.push(project(place(p, pl, offset)))
   }
   return out
@@ -121,9 +118,8 @@ export function grow(b: Bounds, pts: readonly V2[]) {
 }
 
 /** SVG matrix that lays text flat on an isometric plane. */
-export function isoText(plane: "xz" | "yz" | "xy-x", at: V2) {
+export function isoText(plane: "xz" | "xy-x", at: V2) {
   const [e, f] = at
   if (plane === "xz") return `matrix(${COS30} ${SIN30} 0 1 ${e} ${f})`
-  if (plane === "yz") return `matrix(${COS30} ${-SIN30} 0 1 ${e} ${f})`
   return `matrix(${COS30} ${SIN30} ${-COS30} ${SIN30} ${e} ${f})`
 }

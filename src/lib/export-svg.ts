@@ -1,5 +1,4 @@
-// The drawing is styled with CSS variables, which mean nothing outside the page.
-// Bake every computed paint property into attributes before serialising.
+// CSS variables mean nothing outside the page, so bake computed paint into attributes.
 const PAINT = [
   "fill",
   "fill-opacity",
@@ -14,7 +13,7 @@ const PAINT = [
   "letter-spacing",
 ] as const
 
-export function serializeSvg(svg: SVGSVGElement, caption?: string) {
+function serializeSvg(svg: SVGSVGElement, caption?: string) {
   const clone = svg.cloneNode(true) as SVGSVGElement
   const from = svg.querySelectorAll<SVGElement>("*")
   const to = clone.querySelectorAll<SVGElement>("*")

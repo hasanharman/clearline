@@ -13,7 +13,6 @@ export function Footer() {
   return (
     <footer className="border-t">
       <div className="mx-auto max-w-[1440px] px-4 pt-16 sm:px-6 lg:px-10">
-        {/* Drawing title block */}
         <div className="grid overflow-hidden rounded-lg border sm:grid-cols-[1.4fr_repeat(5,1fr)]">
           <div className="flex items-center gap-3 border-b p-4 sm:border-r sm:border-b-0">
             <Logo className="h-8" />

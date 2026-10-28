@@ -1,16 +1,17 @@
-import { boxFaces, emptyBounds, grow, IDENTITY, isoText, light, points, project, type V2, type V3 } from "@/lib/iso"
+import { boxFaces, emptyBounds, grow, IDENTITY, light, points, project, projectPoints, tint, type V2, type V3 } from "@/lib/iso"
 
-export type IsoMat = "face" | "glass" | "dark" | "steel" | "concrete" | "signal" | "frame"
+type IsoMat = "face" | "glass" | "dark" | "steel" | "concrete" | "frame"
 
-const fills: Record<IsoMat, (l: number) => { fill: string; fillOpacity?: number }> = {
-  face: (l) => ({ fill: `color-mix(in oklab, var(--face) ${Math.round(l * 100)}%, var(--shade))` }),
-  frame: (l) => ({ fill: `color-mix(in oklab, var(--steel) ${Math.round(l * 100)}%, var(--shade))` }),
-  steel: (l) => ({ fill: `color-mix(in oklab, var(--steel) ${Math.round(l * 100)}%, var(--shade))` }),
-  dark: (l) => ({ fill: `color-mix(in oklab, var(--rubber) ${Math.round(l * 100)}%, var(--shade))` }),
-  concrete: (l) => ({ fill: `color-mix(in oklab, var(--concrete) ${Math.round(l * 100)}%, var(--shade))` }),
-  glass: (l) => ({ fill: "oklch(0.82 0.08 205)", fillOpacity: 0.22 + (1 - l) * 0.25 }),
-  signal: (l) => ({ fill: `color-mix(in oklab, var(--signal) ${Math.round(l * 100)}%, var(--shade))` }),
+const base: Record<Exclude<IsoMat, "glass">, string> = {
+  face: "var(--face)",
+  frame: "var(--steel)",
+  steel: "var(--steel)",
+  dark: "var(--rubber)",
+  concrete: "var(--concrete)",
 }
+
+const fill = (mat: IsoMat, l: number) =>
+  mat === "glass" ? { fill: "oklch(0.82 0.08 205)", fillOpacity: 0.22 + (1 - l) * 0.25 } : { fill: tint(base[mat], l) }
 
 type BoxProps = { a: V3; b: V3; mat?: IsoMat; dashed?: boolean; hatch?: string }
 
@@ -23,7 +24,7 @@ export function IsoBox({ a, b, mat = "face", dashed, hatch }: BoxProps) {
           <g key={i}>
             <polygon
               points={p}
-              {...fills[mat](light(f.normal))}
+              {...fill(mat, light(f.normal))}
               stroke="var(--ink)"
               strokeWidth={1}
               strokeLinejoin="round"
@@ -41,7 +42,7 @@ export function IsoBox({ a, b, mat = "face", dashed, hatch }: BoxProps) {
 export function IsoLine({ pts, signal, dashed, width = 1 }: { pts: V3[]; signal?: boolean; dashed?: boolean; width?: number }) {
   return (
     <polyline
-      points={points(pts.map(project))}
+      points={projectPoints(pts)}
       fill="none"
       stroke={signal ? "var(--signal)" : "var(--ink)"}
       strokeWidth={width}
@@ -49,20 +50,6 @@ export function IsoLine({ pts, signal, dashed, width = 1 }: { pts: V3[]; signal?
       strokeDasharray={dashed ? "3 3" : undefined}
       vectorEffect="non-scaling-stroke"
     />
-  )
-}
-
-export function IsoText({ at, plane, children, size = 6 }: { at: V3; plane: "xz" | "yz" | "xy-x"; children: string; size?: number }) {
-  return (
-    <text
-      transform={isoText(plane, project(at))}
-      fontSize={size}
-      fill="var(--ink)"
-      textAnchor="middle"
-      style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.06em" }}
-    >
-      {children}
-    </text>
   )
 }
 

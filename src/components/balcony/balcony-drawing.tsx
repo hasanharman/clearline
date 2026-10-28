@@ -2,12 +2,12 @@
 
 import { useId, useMemo, type Ref } from "react"
 
-import { clamp01, COS30, grow, isoText, lerp, points, SIN30, type Bounds } from "@/lib/iso"
+import { clamp01, COS30, grow, isoText, lerp, points, SIN30, tint, type Bounds } from "@/lib/iso"
 import { cn } from "@/lib/utils"
-import { buildScene, PARTS, type Material, type PartKind, type Shape } from "./scene"
+import { buildScene, PARTS, type PartKind, type Shape } from "./scene"
 
 export type GlassKey = "clear" | "smoke" | "bronze" | "frosted"
-export type FrameKey = "auto" | "silver" | "graphite" | "bronze" | "white"
+export type FrameColor = "silver" | "graphite" | "bronze" | "white"
 
 export const GLASS: Record<GlassKey, { label: string; color: string; opacity: number; glint: number }> = {
   clear: { label: "Clear", color: "oklch(0.82 0.08 205)", opacity: 0.26, glint: 0.6 },
@@ -16,7 +16,7 @@ export const GLASS: Record<GlassKey, { label: string; color: string; opacity: nu
   frosted: { label: "Frosted", color: "oklch(0.97 0.006 220)", opacity: 0.8, glint: 0 },
 }
 
-export const FRAME: Record<Exclude<FrameKey, "auto">, { label: string; color: string }> = {
+export const FRAME: Record<FrameColor, { label: string; color: string }> = {
   silver: { label: "Anodised", color: "oklch(0.86 0.006 250)" },
   graphite: { label: "Graphite", color: "oklch(0.38 0.008 255)" },
   bronze: { label: "Bronze", color: "oklch(0.55 0.06 62)" },
@@ -26,7 +26,7 @@ export const FRAME: Record<Exclude<FrameKey, "auto">, { label: string; color: st
 type Props = {
   panels?: number
   glass?: GlassKey
-  frame?: FrameKey
+  frame?: FrameColor | "auto"
   explode?: number
   open?: number
   shine?: number
@@ -79,7 +79,6 @@ export function BalconyDrawing({
   const frameRef = useMemo(() => {
     const exploded = buildScene({ panels, explode: 1, open: 0, shine: 0, stagger: false, glint: false })
     const folded = buildScene({ panels, explode: 0, open: 1, shine: 0, stagger: false, glint: false })
-    const assembled = buildScene({ panels, explode: 0, open: 0, shine: 0, stagger: false, glint: false })
     const b = { ...exploded.bounds }
     grow(b, [[folded.bounds.minX, folded.bounds.minY], [folded.bounds.maxX, folded.bounds.maxY]])
     const left = b.minX - COLUMN
@@ -91,15 +90,22 @@ export function BalconyDrawing({
     } else if (labels === "number") {
       vb = pad(vb, 20)
     }
-    if (dims) for (const d of assembled.dims) grow(vb, [...d.line, ...d.ext.flat()].map(([x, y]) => [x + 10, y - 10] as const))
+    if (dims) {
+      const assembled = buildScene({ panels, explode: 0, open: 0, shine: 0, stagger: false, glint: false })
+      for (const d of assembled.dims) grow(vb, [...d.line, ...d.ext.flat()].map(([x, y]) => [x + 10, y - 10] as const))
+    }
     return { vb: pad(vb, 10), left, right }
   }, [panels, labels, dims])
 
-  const scene = buildScene({ panels, explode, open, shine, stagger, glint: g.glint > 0 })
+  const glint = g.glint > 0
+  const scene = useMemo(
+    () => buildScene({ panels, explode, open, shine, stagger, glint }),
+    [panels, explode, open, shine, stagger, glint]
+  )
   // Geometry without the fold, so the camera doesn't breathe while panels swing.
   const base = camera && open > 0 ? buildScene({ panels, explode, open: 0, shine: 0, stagger, glint: false }) : scene
   const { vb } = frameRef
-  // With a camera the label columns hug the current geometry; otherwise they sit at the exploded extents.
+  // Camera: label columns hug the current geometry instead of the exploded extents.
   const left = camera ? base.bounds.minX - COLUMN : frameRef.left
   const right = camera ? base.bounds.maxX + COLUMN : frameRef.right
 
@@ -149,28 +155,36 @@ export function BalconyDrawing({
     cameraTransform = `translate(${vb.minX + w / 2} ${vb.minY + h / 2}) scale(${s}) translate(${-cx} ${-cy})`
   }
 
-  const fillFor = (s: Shape, isActive: boolean) => {
-    const pct = Math.round((s.light ?? 0.8) * 100)
-    const mix = (base: string, p = pct) => {
-      const c = `color-mix(in oklab, ${base} ${p}%, var(--shade))`
+  const fillFor = (s: Shape, isActive: boolean): { fill: string; fillOpacity?: number } => {
+    const l = s.light ?? 0.8
+    const mix = (base: string, light = l) => {
+      const c = tint(base, light)
       return isActive ? `color-mix(in oklab, ${c} 62%, var(--signal))` : c
     }
-    const table: Record<Material, { fill: string; fillOpacity?: number }> = {
-      frame: { fill: mix(frameColor) },
-      handle: { fill: mix("var(--steel)", Math.round(pct * 0.8)) },
-      concrete: { fill: mix("var(--concrete)") },
-      rubber: { fill: mix("var(--rubber)", 92) },
-      steel: { fill: mix("var(--steel)") },
-      hole: { fill: "var(--shade)", fillOpacity: 0.55 },
-      glass: {
-        fill: isActive ? "var(--signal)" : g.color,
-        fillOpacity: isActive ? 0.2 : g.opacity * (0.8 + (1 - (s.light ?? 0.8)) * 0.6),
-      },
-      glassEdge: { fill: "var(--glass-edge)", fillOpacity: 0.9 },
-      glint: { fill: "var(--glint)", fillOpacity: g.glint * 0.7 },
-      seal: { fill: mix("var(--steel)"), fillOpacity: 0.7 },
+    switch (s.mat) {
+      case "frame":
+        return { fill: mix(frameColor) }
+      case "handle":
+        return { fill: mix("var(--steel)", l * 0.8) }
+      case "concrete":
+        return { fill: mix("var(--concrete)") }
+      case "rubber":
+        return { fill: mix("var(--rubber)", 0.92) }
+      case "steel":
+        return { fill: mix("var(--steel)") }
+      case "seal":
+        return { fill: mix("var(--steel)"), fillOpacity: 0.7 }
+      case "hole":
+        return { fill: "var(--shade)", fillOpacity: 0.55 }
+      case "glassEdge":
+        return { fill: "var(--glass-edge)", fillOpacity: 0.9 }
+      case "glint":
+        return { fill: "var(--glint)", fillOpacity: g.glint * 0.7 }
+      case "glass":
+        return isActive
+          ? { fill: "var(--signal)", fillOpacity: 0.2 }
+          : { fill: g.color, fillOpacity: g.opacity * (0.8 + (1 - l) * 0.6) }
     }
-    return table[s.mat]
   }
 
   return (
